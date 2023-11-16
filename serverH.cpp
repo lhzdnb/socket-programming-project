@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     
     // =============== Step 1 - Set up a UDP socket ===============
     int udpSocket;
-    int udp_port = 42469;
+    int udp_port = 43469;
     udpSocket = socket(AF_INET, SOCK_DGRAM, 0);
     if (udpSocket == -1) {
         cout << "socket() failed with error: " << errno << endl;
@@ -38,9 +38,9 @@ int main(int argc, char* argv[]) {
     }
     
     ifstream file;
-    file.open("literature.txt", ios::in);
+    file.open("history.txt", ios::in);
     if (!file.is_open()) {
-        cout << "Error opening literature.txt" << endl;
+        cout << "Error opening history.txt" << endl;
         return 1;
     }
     
@@ -103,9 +103,9 @@ int main(int argc, char* argv[]) {
                 string new_number = to_string(stoi(number) - 1);
                 bookMap[bookCode] = new_number;
                 ofstream outFile;
-                outFile.open("literature.txt", ios::out);
+                outFile.open("history.txt", ios::out);
                 if (!outFile.is_open()) {
-                    cerr << "Unable to open file literature.txt for writing" << endl;
+                    cerr << "Unable to open file history.txt for writing" << endl;
                     return 1;
                 }
                 

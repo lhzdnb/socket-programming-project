@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
     unordered_map<string, string> members;
     
     ifstream file;
-    file.open("../input_files/member.txt", ios::in);
+    file.open("member.txt", ios::in);
     if (!file.is_open()) {
         cout << "Error opening member.txt" << endl;
         return 1;
