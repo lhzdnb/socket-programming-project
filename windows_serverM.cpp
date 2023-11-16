@@ -160,6 +160,7 @@ int main(int argc, char* argv[]) {
         int responseType = 0;
         // 1: authorize success, 2: password not match, 3: username not exist
         // 4: request not match 5: available, 6: not available 7: not found
+        // 8. not found admin 9. available admin
         
         int TCP_byteReceived = recv(acceptTCP_Socket, TCP_receive_buffer, 200, 0);
         if (TCP_byteReceived > 0) {
@@ -221,6 +222,7 @@ int main(int argc, char* argv[]) {
                     
                     int byteSent = sendto(UDP_Socket, TCP_receive_buffer, 200, 0, (SOCKADDR*)&targetServer,
                                           sizeof(targetServer));
+                    
                     if (byteSent > 0) {
                         // ================== Step 9: Receive the response from the backend server ==================
                         int byteRecv = recvfrom(UDP_Socket, UDP_receive_buffer, 200, 0, NULL, NULL);
