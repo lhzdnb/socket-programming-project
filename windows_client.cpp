@@ -7,8 +7,6 @@
 #include <tchar.h>
 #include <unordered_map>
 #include <string>
-#include <fstream>
-#include <sstream>
 #include "build_encryption_map.h"
 using namespace std;
 
@@ -25,6 +23,8 @@ int main(int argc, char* argv[]) {
     sockaddr_in localAddress;
     int localPortNumber = 0;
     int serverMport = 45469;
+    
+    // Initialize Winsock
     WSADATA wsaData;
     int wsaErr;
     WORD wVersionRequested = MAKEWORD(2, 2);
@@ -34,8 +34,8 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     else {
-        cout << "WSAStartup() is OK!" << endl;
-        cout << "The status: " << wsaData.szSystemStatus << endl;
+//        cout << "WSAStartup() is OK!" << endl;
+//        cout << "The status: " << wsaData.szSystemStatus << endl;
     }
     
     // =============== Step 2 - Set up a Client Socket ===============
@@ -52,6 +52,7 @@ int main(int argc, char* argv[]) {
     }
 
     // =============== Step 3 - Connect to the Server ===============
+    
     sockaddr_in clientService;
     clientService.sin_family = AF_INET;
     InetPton(AF_INET, _T("127.0.0.1"), &clientService.sin_addr.s_addr);
@@ -63,7 +64,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     else {
-        cout << "connect() is OK!" << endl;
+//        cout << "connect() is OK!" << endl;
         int addressLength = sizeof(localAddress);
         if (getsockname(clientSocket, (struct sockaddr*)&localAddress, &addressLength) == SOCKET_ERROR) {
             cout << "getsockname() failed with error: " << WSAGetLastError() << endl;

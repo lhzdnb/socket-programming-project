@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     else {
-        cout << "TCP socket() is OK!" << endl;
+//        cout << "TCP socket() is OK!" << endl;
     }
     
     // UDP socket
@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     else {
-        cout << "UDP socket() is OK!" << endl;
+//        cout << "UDP socket() is OK!" << endl;
     }
     
     // ================== Step 3: Bind the TCP and UDP Socket ==================
@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     else {
-        cout << "\nTCP bind() is OK!\n" << endl;
+//        cout << "\nTCP bind() is OK!\n" << endl;
     }
     
     // UDP bind
@@ -147,13 +147,14 @@ int main(int argc, char* argv[]) {
         return -1;
     }
     else {
-        cout << "Accepted connection" << endl;
+//        cout << "Accepted connection" << endl;
     }
     
     while (true) {
         // ================== Step 6: Chat with the client ==================
         char TCP_receive_buffer[200];
-        int responseType = 0; // 1: authorize success, 2: password not match, 3: username not exist
+        int responseType = 0;
+        // 1: authorize success, 2: password not match, 3: username not exist
         // 4: request not match 5: available, 6: not available 7: not found
         
         int TCP_byteReceived = recv(acceptTCP_Socket, TCP_receive_buffer, 200, 0);
