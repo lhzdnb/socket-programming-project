@@ -26,9 +26,11 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     else {
-        cout << "WSAStartup() is OK!" << endl;
-        cout << "The status: " << wsaData.szSystemStatus << endl;
+//        cout << "WSAStartup() is OK!" << endl;
+//        cout << "The status: " << wsaData.szSystemStatus << endl;
     }
+    
+    bool admin = false;
     
     // =============== Step 2 - Set up a UDP socket ===============
     SOCKET udpSocket;
@@ -79,13 +81,13 @@ int main(int argc, char* argv[]) {
         cout << "Server L is up and running using UDP in port " << udp_port << "." << endl;
     }
     
+    sockaddr_in clientService;
+    int clientService_length = sizeof(clientService);
+    clientService.sin_family = AF_INET;
+    InetPton(AF_INET, _T("127.0.0.1"), &clientService.sin_addr.s_addr);
+    clientService.sin_port = htons(45469);
     // =============== Step 4 - Receive data from Main Server ===============
     while (true) {
-        sockaddr_in clientService;
-        int clientService_length = sizeof(clientService);
-        clientService.sin_family = AF_INET;
-        InetPton(AF_INET, _T("127.0.0.1"), &clientService.sin_addr.s_addr);
-        clientService.sin_port = htons(45469);
         char recvBuffer[200];
         int recvBytes = recvfrom(udpSocket, recvBuffer, sizeof(recvBuffer), 0, (SOCKADDR*)&clientService, &clientService_length);
         
@@ -97,15 +99,21 @@ int main(int argc, char* argv[]) {
         }
         else {
             bookCode = recvBuffer;
-            cout << "Server L received " << bookCode << " code from the Main Server." << endl;
+            if (recvBuffer[recvBytes - 2] == 'A') {
+                admin = true;
+                cout << "Server L received an inventory status request for code " << bookCode << "." << endl;
+            }
+            else {
+                cout << "Server L received " << bookCode << " code from the Main Server." << endl;
+            }
         }
         
         // =============== Step 5 - Send data to Main Server ===============
         
-        char sendBuffer[200];
+        char sendBuffer[200] = {0};
         if (bookMap.find(bookCode) != bookMap.end()) {
             number = bookMap[bookCode];
-            if (stoi(number) > 0) {
+            if (stoi(number) > 0 && !admin) {
                 strcpy_s(sendBuffer, "The requested book is available.");
                 
                 // Update the number of books
@@ -124,12 +132,16 @@ int main(int argc, char* argv[]) {
                 
                 outFile.close();
             }
+            // Admin request, just send the number of books if it is not negative
+            else if (stoi(number) >= 0 && admin) {
+                strcpy_s(sendBuffer, number.c_str());
+            }
             else {
                 strcpy_s(sendBuffer, "The requested book is not available.");
             }
         }
         else {
-            strcpy_s(sendBuffer, "Not able to find the book");
+            strcpy_s(sendBuffer, "Not able to find the book.");
         }
         int sendBytes = sendto(udpSocket, sendBuffer, sizeof(sendBuffer), 0, (SOCKADDR*)&clientService, sizeof(clientService));
         if (sendBytes < 0) {
@@ -137,6 +149,9 @@ int main(int argc, char* argv[]) {
             closesocket(udpSocket);
             WSACleanup();
             return 0;
+        }
+        else if (admin) {
+            cout << "Server S finished sending the inventory status to the Main Server using UDP on port " << udp_port << "." << endl;
         }
         else {
             cout << "Server L finished sending the availability status of code " << bookCode << " to the Main Server using UDP on port " << udp_port << "." << endl;

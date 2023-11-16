@@ -19,6 +19,9 @@ int main(int argc, char* argv[]) {
     portNumbers["H"] = 43469;
     
     bool isAuthorized = false;
+    bool isAdmin = false;
+    char UDP_receive_buffer[200] = {0};
+    char bookCode[200] = {0};
     
     // ================== Step 0: Print out the message and load member data ==================
     
@@ -61,8 +64,8 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     else {
-        cout << "WSAStartup() is OK!" << endl;
-        cout << "The status: " << wsaData.szSystemStatus << endl;
+//        cout << "WSAStartup() is OK!" << endl;
+//        cout << "The status: " << wsaData.szSystemStatus << endl;
     }
     
     // ================== Step 2: Set up the TCP and UDP Socket ==================
@@ -124,7 +127,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     else {
-        cout << "\nUDP bind() is OK!\n" << endl;
+//        cout << "\nUDP bind() is OK!\n" << endl;
     }
     
     // ================== Step 4: Listen on the TCP Socket ==================
@@ -135,7 +138,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     else {
-        cout << "listen() is OK! Waiting for connections!" << endl;
+//        cout << "listen() is OK! Waiting for connections!" << endl;
     }
     
     
@@ -153,7 +156,7 @@ int main(int argc, char* argv[]) {
     
     while (true) {
         // ================== Step 6: Chat with the client ==================
-        char TCP_receive_buffer[200];
+        char TCP_receive_buffer[200] = {0};
         int responseType = 0;
         // 1: authorize success, 2: password not match, 3: username not exist
         // 4: request not match 5: available, 6: not available 7: not found
@@ -173,6 +176,11 @@ int main(int argc, char* argv[]) {
                     // If the password matches the username
                     if (members[username] == password) {
                         isAuthorized = true;
+                        
+                        // Admin request
+                        if (username == "Firns" && password == "Firns") {
+                            isAdmin = true;
+                        }
                         cout << "Password " << password << " matches the username. Send a reply to the client." << endl;
                         responseType = 1;
                     }
@@ -188,6 +196,7 @@ int main(int argc, char* argv[]) {
                     responseType = 3;
                 }
             } else {
+                strcpy(bookCode, TCP_receive_buffer);
                 // ================== Step 8: Send the request to the backend server ==================
                 cout << "Main Server received the book request from the client using TCP over port " << TCP_Port << "." << endl;
                 string target(1, TCP_receive_buffer[0]);
@@ -203,22 +212,35 @@ int main(int argc, char* argv[]) {
                     targetServer.sin_family = AF_INET;
                     InetPton(AF_INET, _T("127.0.0.1"), &targetServer.sin_addr.s_addr);
                     targetServer.sin_port = htons(targetPort);
+                    
+                    // Admin request to backend server
+                    if (isAdmin) {
+                        TCP_receive_buffer[TCP_byteReceived - 2] = 'A';
+                        TCP_receive_buffer[TCP_byteReceived + 2] = '\0';
+                    }
+                    
                     int byteSent = sendto(UDP_Socket, TCP_receive_buffer, 200, 0, (SOCKADDR*)&targetServer,
                                           sizeof(targetServer));
                     if (byteSent > 0) {
                         // ================== Step 9: Receive the response from the backend server ==================
-                        char UDP_receive_buffer[200];
                         int byteRecv = recvfrom(UDP_Socket, UDP_receive_buffer, 200, 0, NULL, NULL);
                         if (byteRecv > 0) {
                             cout << "Main Server received from Server " << target << " the book status result using UDP over port " << UDP_Port << "." << endl;
-                            if (strcmp(UDP_receive_buffer, "The requested book is available.") == 0) {
+                            if (strcmp(UDP_receive_buffer, "The requested book is available.") == 0 && !isAdmin) {
                                 responseType = 5;
                             }
                             else if (strcmp(UDP_receive_buffer, "The requested book is not available.") == 0) {
                                 responseType = 6;
                             }
-                            else {
+                            
+                            else if (strcmp(UDP_receive_buffer, "Not able to find the book.") == 0 && !isAdmin) {
                                 responseType = 7;
+                            }
+                            else if (strcmp(UDP_receive_buffer, "Not able to find the book.") == 0 && isAdmin) {
+                                responseType = 8;
+                            }
+                            else if (isAdmin) {
+                                responseType = 9;
                             }
                         }
                         else {
@@ -237,7 +259,7 @@ int main(int argc, char* argv[]) {
             }
             
             // ================== Step 10: Send the response to the client ==================
-            char TCP_send_buffer[200];
+            char TCP_send_buffer[200] = {0};
             switch (responseType) {
                 case 1:
                     strcpy_s(TCP_send_buffer, "Authorize");
@@ -260,13 +282,23 @@ int main(int argc, char* argv[]) {
                 case 7:
                     strcpy_s(TCP_send_buffer, "NoRecord");
                     break;
+                case 8:
+                    strcpy_s(TCP_send_buffer, "NoRecord");
+                    break;
+                case 9:
+                    strcpy_s(TCP_send_buffer, UDP_receive_buffer);
+                    break;
                 default:
                     break;
             }
             int TCP_byteSent = send(acceptTCP_Socket, TCP_send_buffer, 200, 0);
             if (TCP_byteSent > 0) {
-                if (isAuthorized && responseType >= 4) {
+                if (isAuthorized && responseType >= 4 && !isAdmin) {
                     cout << "Main Server sent the book result to the client." << endl;
+                }
+                else if (responseType == 9) {
+                    
+                    cout << "Number of books " << bookCode << " available is: " << TCP_send_buffer[0] << "." << endl;
                 }
             }
             else {
