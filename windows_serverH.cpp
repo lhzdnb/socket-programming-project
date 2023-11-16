@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
         clientService.sin_family = AF_INET;
         InetPton(AF_INET, _T("127.0.0.1"), &clientService.sin_addr.s_addr);
         clientService.sin_port = htons(45469);
-        char recvBuffer[1024];
+        char recvBuffer[200];
         int recvBytes = recvfrom(udpSocket, recvBuffer, sizeof(recvBuffer), 0, (SOCKADDR*)&clientService, &clientService_length);
         
         if (recvBytes < 0) {
