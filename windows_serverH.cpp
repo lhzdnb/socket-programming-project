@@ -157,5 +157,4 @@ int main(int argc, char* argv[]) {
             cout << "Server H finished sending the availability status of code " << bookCode << " to the Main Server using UDP on port " << udp_port << "." << endl;
         }
     }
-    
 }
