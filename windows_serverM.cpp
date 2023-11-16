@@ -154,7 +154,7 @@ int main(int argc, char* argv[]) {
         // ================== Step 6: Chat with the client ==================
         char TCP_receive_buffer[200];
         int responseType = 0; // 1: authorize success, 2: password not match, 3: username not exist
-        // 4: request not match 5: available, 6: not available
+        // 4: request not match 5: available, 6: not available 7: not found
         
         int TCP_byteReceived = recv(acceptTCP_Socket, TCP_receive_buffer, 200, 0);
         if (TCP_byteReceived > 0) {
@@ -171,12 +171,12 @@ int main(int argc, char* argv[]) {
                     // If the password matches the username
                     if (members[username] == password) {
                         isAuthorized = true;
-                        cout << "Password" << password << " matches the username. Send a reply to the client." << endl;
+                        cout << "Password " << password << " matches the username. Send a reply to the client." << endl;
                         responseType = 1;
                     }
                         // If the password does not match the username
                     else {
-                        cout << "Password" << password << " does not match the username. Send a reply to the client." << endl;
+                        cout << "Password " << password << " does not match the username. Send a reply to the client." << endl;
                         responseType = 2;
                     }
                 }
@@ -187,7 +187,7 @@ int main(int argc, char* argv[]) {
                 }
             } else {
                 // ================== Step 8: Send the request to the backend server ==================
-                cout << "Main Server received the book request from the client using TCP over port " << TCP_Port << endl;
+                cout << "Main Server received the book request from the client using TCP over port " << TCP_Port << "." << endl;
                 string target(1, TCP_receive_buffer[0]);
                 int targetPort = portNumbers[target];
                 
@@ -196,7 +196,7 @@ int main(int argc, char* argv[]) {
                     responseType = 4;
                 }
                 else {
-                    cout << "Found " << TCP_receive_buffer << " located at Server " << target << ". Send to Server" << target << endl;
+                    cout << "Found " << TCP_receive_buffer << " located at Server " << target << ". Send to Server " << target << "." << endl;
                     sockaddr_in targetServer;
                     targetServer.sin_family = AF_INET;
                     InetPton(AF_INET, _T("127.0.0.1"), &targetServer.sin_addr.s_addr);
@@ -209,11 +209,14 @@ int main(int argc, char* argv[]) {
                         int byteRecv = recvfrom(UDP_Socket, UDP_receive_buffer, 200, 0, NULL, NULL);
                         if (byteRecv > 0) {
                             cout << "Main Server received the result from Server" << target << "the book status result using UDP over port " << UDP_Port << "." << endl;
-                            if (strcmp(UDP_receive_buffer, "Available") == 0) {
+                            if (strcmp(UDP_receive_buffer, "The requested book is available.") == 0) {
                                 responseType = 5;
                             }
-                            else {
+                            else if (strcmp(UDP_receive_buffer, "The requested book is not available.") == 0) {
                                 responseType = 6;
+                            }
+                            else {
+                                responseType = 7;
                             }
                         }
                         else {
@@ -252,12 +255,15 @@ int main(int argc, char* argv[]) {
                 case 6:
                     strcpy_s(TCP_send_buffer, "Unavailable");
                     break;
+                case 7:
+                    strcpy_s(TCP_send_buffer, "NoRecord");
+                    break;
                 default:
                     break;
             }
             int TCP_byteSent = send(acceptTCP_Socket, TCP_send_buffer, 200, 0);
             if (TCP_byteSent > 0) {
-                if (isAuthorized) {
+                if (isAuthorized && responseType >= 4) {
                     cout << "Main Server sent the book result to the client." << endl;
                 }
             }
