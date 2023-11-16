@@ -40,6 +40,7 @@ int main(int argc, char* argv[]) {
         if (getline(iss, username, ',') && getline(iss, password)) {
             // Delete the possible space in the beginning of the password
             password.erase(0, password.find_first_not_of(" \n\r\t"));
+            
             members[username] = password;
         }
     }

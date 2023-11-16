@@ -44,6 +44,9 @@ int main(int argc, char* argv[]) {
     
     string line;
     while (getline(file, line)) {
+        if (!line.empty() && line.back() == '\r') {
+            line.pop_back();
+        }
         istringstream iss(line);
         string username, password;
         if (getline(iss, username, ',') && getline(iss, password)) {
