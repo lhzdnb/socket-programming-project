@@ -28,6 +28,7 @@ int main(int argc, char* argv[]) {
     string username;
     string password;
     string bookCode;
+    bool isAdmin = false;
     std::unordered_map<char, char> encryptionMap = buildEncryptionMap();
     cout << "Client is up and running." << endl;
     bool isAuthorized = false;
@@ -71,7 +72,7 @@ int main(int argc, char* argv[]) {
     // =============== Step 3 - Chat to the server ===============
     
     while (true) {
-        char sendBuffer[200];
+        char sendBuffer[200] = {0};
         
         if (!isAuthorized) {
             cout << "Please enter the username: ";
@@ -79,6 +80,9 @@ int main(int argc, char* argv[]) {
             cout << "Please enter the password: ";
             cin >> password;
             
+            if (username == "Admin" && password == "Admin") {
+                isAdmin = true;
+            }
             string encryptedUsername = encrypt(username, encryptionMap);
             string encryptedPassword = encrypt(password, encryptionMap);
             string message = encryptedUsername + " " + encryptedPassword;
@@ -92,21 +96,26 @@ int main(int argc, char* argv[]) {
                 close(clientSocket);
                 return 0;
             }
-        } else {
+        }
+        else {
             cout << "Please enter book code to query: ";
             cin >> bookCode;
             strncpy(sendBuffer, bookCode.c_str(), sizeof(sendBuffer));
             int byteSent = send(clientSocket, sendBuffer, sizeof(sendBuffer), 0);
-            if (byteSent > 0) {
+            if (byteSent > 0 && !isAdmin) {
                 cout << username << " sent the request to the Main Server." << endl;
-            } else {
+            }
+            else if (byteSent > 0) {
+                cout << "Request sent to the Main Server with Admin rights." << endl;
+            }
+            else {
                 cout << "send() failed with error: " << errno << endl;
                 close(clientSocket);
                 return 0;
             }
         }
         
-        char receiveBuffer[200];
+        char receiveBuffer[200] = {0};
         int byteRecv = recv(clientSocket, receiveBuffer, sizeof(receiveBuffer), 0);
         if (byteRecv > 0) {
             cout << "Response received from the Main Server on TCP port: " << localPortNumber << "." << endl;
@@ -132,7 +141,11 @@ int main(int argc, char* argv[]) {
                 cout << "The requested book " << bookCode << " is NOT available in the library.\n" << endl;
                 cout << "\n---- Start a new query ----" << endl;
             }
-        } else {
+            else if (isAdmin) {
+                cout << "Total number of book " << bookCode << " = " << receiveBuffer << "\n" << endl;
+            }
+        }
+        else {
             cout << "recv() failed with error: " << errno << endl;
             close(clientSocket);
             return 0;
