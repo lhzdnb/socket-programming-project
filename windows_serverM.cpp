@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
     TCP_Socket = INVALID_SOCKET;
     TCP_Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (TCP_Socket == INVALID_SOCKET) {
-        cout << "socket() failed with error: " << WSAGetLastError() << endl;
+        cout << "TCP socket() failed with error: " << WSAGetLastError() << endl;
         WSACleanup();
         return 0;
     }
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
     UDP_Socket = INVALID_SOCKET;
     UDP_Socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (UDP_Socket == INVALID_SOCKET) {
-        cout << "socket() failed with error: " << WSAGetLastError() << endl;
+        cout << "UDP socket() failed with error: " << WSAGetLastError() << endl;
         WSACleanup();
         return 0;
     }
