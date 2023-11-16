@@ -137,19 +137,20 @@ int main(int argc, char* argv[]) {
         cout << "listen() is OK! Waiting for connections!" << endl;
     }
     
+    
+    // ================== Step 5: Accept a Client Socket ==================
+    SOCKET acceptTCP_Socket = accept(TCP_Socket, NULL, NULL);
+    if (acceptTCP_Socket == INVALID_SOCKET) {
+        cout << "accept() failed with error: " << WSAGetLastError() << endl;
+        closesocket(TCP_Socket);
+        WSACleanup();
+        return -1;
+    }
+    else {
+        cout << "Accepted connection" << endl;
+    }
+    
     while (true) {
-        // ================== Step 5: Accept a Client Socket ==================
-        SOCKET acceptTCP_Socket = accept(TCP_Socket, NULL, NULL);
-        if (acceptTCP_Socket == INVALID_SOCKET) {
-            cout << "accept() failed with error: " << WSAGetLastError() << endl;
-            closesocket(TCP_Socket);
-            WSACleanup();
-            return -1;
-        }
-        else {
-            cout << "Accepted connection" << endl;
-        }
-        
         // ================== Step 6: Chat with the client ==================
         char TCP_receive_buffer[200];
         int responseType = 0; // 1: authorize success, 2: password not match, 3: username not exist
@@ -163,30 +164,30 @@ int main(int argc, char* argv[]) {
                 string bufferStr(TCP_receive_buffer);
                 istringstream iss(bufferStr);
                 iss >> username >> password;
-                cout << "Main Server received the username and password from the client using TCP over port" << TCP_Port
-                     << endl;
+                cout << "Main Server received the username and password from the client using TCP over port " << TCP_Port
+                   << "."  << endl;
                 // If the username exists in the member.txt
                 if (members.find(username) != members.end()) {
                     // If the password matches the username
                     if (members[username] == password) {
                         isAuthorized = true;
-                        cout << "Password" << password << "matches the username. Send a reply to the client" << endl;
+                        cout << "Password" << password << " matches the username. Send a reply to the client." << endl;
                         responseType = 1;
                     }
                         // If the password does not match the username
                     else {
-                        cout << "Main Server failed to authenticate " << username << endl;
+                        cout << "Password" << password << " does not match the username. Send a reply to the client." << endl;
                         responseType = 2;
                     }
                 }
                     // If the username does not exist in the member.txt
                 else {
-                    cout << "Main Server failed to authenticate " << username << endl;
+                    cout << username << " is not registered. Send a reply to the client." << endl;
                     responseType = 3;
                 }
             } else {
                 // ================== Step 8: Send the request to the backend server ==================
-                cout << "Main Server received the request from the client using TCP over port " << TCP_Port << endl;
+                cout << "Main Server received the book request from the client using TCP over port " << TCP_Port << endl;
                 string target(1, TCP_receive_buffer[0]);
                 int targetPort = portNumbers[target];
                 
@@ -195,11 +196,11 @@ int main(int argc, char* argv[]) {
                     responseType = 4;
                 }
                 else {
-                    cout << "Found " << TCP_receive_buffer << "located at Server" << target << "Send to Server" << target << endl;
+                    cout << "Found " << TCP_receive_buffer << " located at Server " << target << ". Send to Server" << target << endl;
                     sockaddr_in targetServer;
                     targetServer.sin_family = AF_INET;
                     InetPton(AF_INET, _T("127.0.0.1"), &targetServer.sin_addr.s_addr);
-                    targetServer.sin_port = htons(portNumbers[target]);
+                    targetServer.sin_port = htons(targetPort);
                     int byteSent = sendto(UDP_Socket, TCP_receive_buffer, 200, 0, (SOCKADDR*)&targetServer,
                                           sizeof(targetServer));
                     if (byteSent > 0) {
@@ -207,7 +208,7 @@ int main(int argc, char* argv[]) {
                         char UDP_receive_buffer[200];
                         int byteRecv = recvfrom(UDP_Socket, UDP_receive_buffer, 200, 0, NULL, NULL);
                         if (byteRecv > 0) {
-                            cout << "Main Server received the result from Server" << target << "the book status result using UDP over port " << UDP_Port << ":" << endl;
+                            cout << "Main Server received the result from Server" << target << "the book status result using UDP over port " << UDP_Port << "." << endl;
                             if (strcmp(UDP_receive_buffer, "Available") == 0) {
                                 responseType = 5;
                             }
@@ -249,7 +250,7 @@ int main(int argc, char* argv[]) {
                     strcpy_s(TCP_send_buffer, "Available");
                     break;
                 case 6:
-                    strcpy_s(TCP_send_buffer, "Not Available");
+                    strcpy_s(TCP_send_buffer, "Unavailable");
                     break;
                 default:
                     break;
