@@ -13,6 +13,9 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
+    string username;
+    string password;
+    string bookCode;
     std::unordered_map<char, char> encryptionMap = buildEncryptionMap();
     cout << "Client is up and running" << endl;
     bool isAuthorized = false;
@@ -75,14 +78,13 @@ int main(int argc, char* argv[]) {
     
     while(true) {
         char sendBuffer[200];
-        string username;
-        string password;
-        string bookCode;
+        
         if (!isAuthorized) {
             cout << "Please enter the username: ";
             cin >> username;
             cout << "Please enter the password: ";
             cin >> password;
+            
             
             string encryptedUsername = encrypt(username, encryptionMap);
             string encryptedPassword = encrypt(password, encryptionMap);
@@ -106,7 +108,7 @@ int main(int argc, char* argv[]) {
             strcpy_s(sendBuffer, bookCode.c_str());
             int byteSent = send(clientSocket, sendBuffer, 200, 0);
             if (byteSent > 0) {
-                cout << username << "sent the request to the Main Server." << endl;
+                cout << username << " sent the request to the Main Server." << endl;
             }
             else {
                 cout << "send() failed with error: " << WSAGetLastError() << endl;
@@ -122,13 +124,13 @@ int main(int argc, char* argv[]) {
             cout << "Response received from the Main Server on TCP port: " << localPortNumber << endl;
             if (strcmp(receiveBuffer, "Authorize") == 0) {
                 isAuthorized = true;
-                cout << username << "received the result of the authentication from the Main Server using TCP over port " << localPortNumber << "Authentication is successful" << endl;
+                cout << username << " received the result of the authentication from the Main Server using TCP over port " << localPortNumber << "Authentication is successful" << endl;
             }
             else if (strcmp(receiveBuffer, "Unauthorized") == 0) {
-                cout << username << "received the result of the authentication from the Main Server using TCP over port " << localPortNumber << "Authentication failed: Username not found" << endl;
+                cout << username << " received the result of the authentication from the Main Server using TCP over port " << localPortNumber << "Authentication failed: Username not found" << endl;
             }
             else if (strcmp(receiveBuffer, "NoUser") == 0) {
-                cout << username << "received the result of the authentication from the Main Server using TCP over port " << localPortNumber << "Authentication failed: Password does not match" << endl;
+                cout << username << " received the result of the authentication from the Main Server using TCP over port " << localPortNumber << "Authentication failed: Password does not match" << endl;
             }
             else if (strcmp(receiveBuffer, "NoServer") == 0) {
                 cout << "Not able to find the book-code " << bookCode << " in the system\n" << endl;
