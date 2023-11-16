@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
     }
     
     ifstream file;
-    file.open("../input_files/science.txt", ios::in);
+    file.open("science.txt", ios::in);
     if (!file.is_open()) {
         cout << "Error opening science.txt" << endl;
         return 1;
@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
                 string new_number = to_string(stoi(number) - 1);
                 bookMap[bookCode] = new_number;
                 ofstream outFile;
-                outFile.open("../input_files/science.txt", ios::out);
+                outFile.open("science.txt", ios::out);
                 if (!outFile.is_open()) {
                     cerr << "无法打开文件science.txt进行写入" << endl;
                     return 1;

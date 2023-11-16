@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
     }
     
     ifstream file;
-    file.open("../input_files/literature.txt", ios::in);
+    file.open("literature.txt", ios::in);
     if (!file.is_open()) {
         cout << "Error opening literature.txt" << endl;
         return 1;
@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
                 string new_number = to_string(stoi(number) - 1);
                 bookMap[bookCode] = new_number;
                 ofstream outFile;
-                outFile.open("../input_files/literature.txt", ios::out);
+                outFile.open("literature.txt", ios::out);
                 if (!outFile.is_open()) {
                     cerr << "无法打开文件science.txt进行写入" << endl;
                     return 1;
@@ -151,7 +151,7 @@ int main(int argc, char* argv[]) {
             return 0;
         }
         else if (admin) {
-            cout << "Server S finished sending the inventory status to the Main Server using UDP on port " << udp_port << "." << endl;
+            cout << "Server L finished sending the inventory status to the Main Server using UDP on port " << udp_port << "." << endl;
         }
         else {
             cout << "Server L finished sending the availability status of code " << bookCode << " to the Main Server using UDP on port " << udp_port << "." << endl;

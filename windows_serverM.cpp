@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
     unordered_map<string, string> members;
     
     ifstream file;
-    file.open("../input_files/member.txt", ios::in);
+    file.open("member.txt", ios::in);
     if (!file.is_open()) {
         cout << "Error opening member.txt" << endl;
         return 1;
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
     
     file.close();
     
-    cout << "Main Server loaded member data" << endl;
+    cout << "Main Server loaded member list." << endl;
     
     // ================== Step 1: Set up DLL ==================
     
@@ -227,16 +227,20 @@ int main(int argc, char* argv[]) {
                         if (byteRecv > 0) {
                             cout << "Main Server received from Server " << target << " the book status result using UDP over port " << UDP_Port << "." << endl;
                             if (strcmp(UDP_receive_buffer, "The requested book is available.") == 0 && !isAdmin) {
+                                cout << "The requested book " << bookCode << " is available." << endl;
                                 responseType = 5;
                             }
                             else if (strcmp(UDP_receive_buffer, "The requested book is not available.") == 0) {
+                                cout << "The requested book " << bookCode << " is NOT available." << endl;
                                 responseType = 6;
                             }
                             
                             else if (strcmp(UDP_receive_buffer, "Not able to find the book.") == 0 && !isAdmin) {
+                                cout << "Not able to find the book " << bookCode << " in the system." << endl;
                                 responseType = 7;
                             }
                             else if (strcmp(UDP_receive_buffer, "Not able to find the book.") == 0 && isAdmin) {
+                                cout << "Not able to find the book " << bookCode << " in the system." << endl;
                                 responseType = 8;
                             }
                             else if (isAdmin) {
@@ -293,12 +297,12 @@ int main(int argc, char* argv[]) {
             }
             int TCP_byteSent = send(acceptTCP_Socket, TCP_send_buffer, 200, 0);
             if (TCP_byteSent > 0) {
-                if (isAuthorized && responseType >= 4 && !isAdmin) {
+                if (isAuthorized && responseType >= 4 && responseType <= 8) {
                     cout << "Main Server sent the book result to the client." << endl;
                 }
                 else if (responseType == 9) {
-                    
                     cout << "Number of books " << bookCode << " available is: " << TCP_send_buffer[0] << "." << endl;
+                    cout << "Main Server sent the book result to the client." << endl;
                 }
             }
             else {
