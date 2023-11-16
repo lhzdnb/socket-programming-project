@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     else {
-        cout << "Server L is up and running using UDP on port " << udp_port << "." << endl;
+        cout << "Server S is up and running using UDP on port " << udp_port << "." << endl;
     }
     
     // =============== Step 3 - Receive data from Main Server ===============
@@ -89,7 +89,7 @@ int main(int argc, char* argv[]) {
         }
         else {
             bookCode = recvBuffer;
-            cout << "Server L received " << bookCode << " code from the Main Server." << endl;
+            cout << "Server S received " << bookCode << " code from the Main Server." << endl;
         }
         
         // =============== Step 4 - Send data to Main Server ===============
@@ -129,7 +129,7 @@ int main(int argc, char* argv[]) {
             return 0;
         }
         else {
-            cout << "Server L finished sending the availability status of code " << bookCode << " to the Main Server using UDP on port " << udp_port << "." << endl;
+            cout << "Server S finished sending the availability status of code " << bookCode << " to the Main Server using UDP on port " << udp_port << "." << endl;
         }
     }
     
