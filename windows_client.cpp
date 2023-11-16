@@ -121,16 +121,16 @@ int main(int argc, char* argv[]) {
         char receiveBuffer[200];
         int byteRecv = recv(clientSocket, receiveBuffer, 200, 0);
         if (byteRecv > 0) {
-            cout << "Response received from the Main Server on TCP port: " << localPortNumber << endl;
+            cout << "Response received from the Main Server on TCP port: " << localPortNumber << "." << endl;
             if (strcmp(receiveBuffer, "Authorize") == 0) {
                 isAuthorized = true;
                 cout << username << " received the result of the authentication from the Main Server using TCP over port " << localPortNumber << ". Authentication is successful." << endl;
             }
             else if (strcmp(receiveBuffer, "Unauthorized") == 0) {
-                cout << username << " received the result of the authentication from the Main Server using TCP over port " << localPortNumber << ". Authentication failed: Username not found." << endl;
+                cout << username << " received the result of the authentication from the Main Server using TCP over port " << localPortNumber << ". Authentication failed: Password does not match." << endl;
             }
             else if (strcmp(receiveBuffer, "NoUser") == 0) {
-                cout << username << " received the result of the authentication from the Main Server using TCP over port " << localPortNumber << ". Authentication failed: Password does not match." << endl;
+                cout << username << " received the result of the authentication from the Main Server using TCP over port " << localPortNumber << ". Authentication failed: Username not found." << endl;
             }
             else if (strcmp(receiveBuffer, "NoServer") == 0 || strcmp(receiveBuffer, "NoRecord") == 0) {
                 cout << "Not able to find the book-code " << bookCode << " in the system\n" << endl;

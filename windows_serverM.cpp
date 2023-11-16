@@ -189,13 +189,13 @@ int main(int argc, char* argv[]) {
                 // ================== Step 8: Send the request to the backend server ==================
                 cout << "Main Server received the book request from the client using TCP over port " << TCP_Port << "." << endl;
                 string target(1, TCP_receive_buffer[0]);
-                int targetPort = portNumbers[target];
                 
                 if (portNumbers.find(target) == portNumbers.end()) {
-                    cout << "Did not found " << TCP_receive_buffer << "in the book code list" << endl;
+                    cout << "Did not found " << TCP_receive_buffer << " in the book code list." << endl;
                     responseType = 4;
                 }
                 else {
+                    int targetPort = portNumbers[target];
                     cout << "Found " << TCP_receive_buffer << " located at Server " << target << ". Send to Server " << target << "." << endl;
                     sockaddr_in targetServer;
                     targetServer.sin_family = AF_INET;
@@ -208,7 +208,7 @@ int main(int argc, char* argv[]) {
                         char UDP_receive_buffer[200];
                         int byteRecv = recvfrom(UDP_Socket, UDP_receive_buffer, 200, 0, NULL, NULL);
                         if (byteRecv > 0) {
-                            cout << "Main Server received the result from Server" << target << "the book status result using UDP over port " << UDP_Port << "." << endl;
+                            cout << "Main Server received from Server " << target << " the book status result using UDP over port " << UDP_Port << "." << endl;
                             if (strcmp(UDP_receive_buffer, "The requested book is available.") == 0) {
                                 responseType = 5;
                             }

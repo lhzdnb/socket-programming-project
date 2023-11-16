@@ -13,7 +13,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-   // =============== Step 1 - Set up DLL ===============
+    // =============== Step 1 - Set up DLL ===============
     unordered_map<string, string> bookMap;
     string bookCode, number;
     // Initialize Winsock
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     
     // =============== Step 2 - Set up a UDP socket ===============
     SOCKET udpSocket;
-    int udp_port = 41469;
+    int udp_port = 43469;
     udpSocket = INVALID_SOCKET;
     udpSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (udpSocket == INVALID_SOCKET) {
@@ -45,9 +45,9 @@ int main(int argc, char* argv[]) {
     }
     
     ifstream file;
-    file.open("../input_files/science.txt", ios::in);
+    file.open("../input_files/history.txt", ios::in);
     if (!file.is_open()) {
-        cout << "Error opening science.txt" << endl;
+        cout << "Error opening history.txt" << endl;
         return 1;
     }
     
@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     else {
-        cout << "Server S is up and running using UDP in port " << udp_port << "." << endl;
+        cout << "Server H is up and running using UDP in port " << udp_port << "." << endl;
     }
     
     // =============== Step 4 - Receive data from Main Server ===============
@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
         }
         else {
             bookCode = recvBuffer;
-            cout << "Server S received " << bookCode << " code from the Main Server." << endl;
+            cout << "Server H received " << bookCode << " code from the Main Server." << endl;
         }
         
         // =============== Step 5 - Send data to Main Server ===============
@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
                 string new_number = to_string(stoi(number) - 1);
                 bookMap[bookCode] = new_number;
                 ofstream outFile;
-                outFile.open("../input_files/science.txt", ios::out);
+                outFile.open("../input_files/history.txt", ios::out);
                 if (!outFile.is_open()) {
                     cerr << "无法打开文件science.txt进行写入" << endl;
                     return 1;
@@ -139,7 +139,7 @@ int main(int argc, char* argv[]) {
             return 0;
         }
         else {
-            cout << "Server S finished sending the availability status of code " << bookCode << " to the Main Server using UDP on port " << udp_port << "." << endl;
+            cout << "Server H finished sending the availability status of code " << bookCode << " to the Main Server using UDP on port " << udp_port << "." << endl;
         }
     }
     
