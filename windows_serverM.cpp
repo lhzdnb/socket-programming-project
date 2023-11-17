@@ -179,7 +179,7 @@ int main(int argc, char* argv[]) {
                         isAuthorized = true;
                         
                         // Admin request
-                        if (username == "Firns" && password == "Firns") {
+                        if (username == "firns" && password == members["firns"]) {
                             isAdmin = true;
                         }
                         cout << "Password " << password << " matches the username. Send a reply to the client." << endl;
