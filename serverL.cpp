@@ -138,7 +138,7 @@ int main(int argc, char* argv[]) {
             }
         }
         else {
-            strcpy(sendBuffer, "Not able to find the book");
+            strcpy(sendBuffer, "Not able to find the book.");
         }
         int sendBytes = sendto(udpSocket, sendBuffer, sizeof(sendBuffer), 0, (struct sockaddr*)&clientService, sizeof(clientService));
         if (sendBytes < 0) {
