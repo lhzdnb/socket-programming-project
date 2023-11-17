@@ -46,13 +46,17 @@ int main(int argc, char* argv[]) {
     
     string line;
     while (getline(file, line)) {
+        // Delete the possible \r in the end of the line, which is the case in Windows
+        // reference: https://stackoverflow.com/questions/6089231/getting-std-ifstream-to-handle-lf-cr-and-crlf
         if (!line.empty() && line.back() == '\r') {
             line.pop_back();
         }
+        
         istringstream iss(line);
         string code, num;
         if (getline(iss, code, ',') && getline(iss, num)) {
             // Delete the possible space in the beginning of the number
+            // reference: https://cplusplus.com/reference/string/string/find_first_not_of/
             num.erase(0, num.find_first_not_of(" \n\r\t"));
             bookMap[code] = num;
         }
