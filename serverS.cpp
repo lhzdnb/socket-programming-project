@@ -25,6 +25,8 @@ int main(int argc, char* argv[]) {
     unordered_map<string, string> bookMap;
     string bookCode, number;
     
+    bool admin = false;
+    
     // =============== Step 1 - Set up a UDP socket ===============
     int udpSocket;
     int udp_port = 41469;
@@ -46,6 +48,9 @@ int main(int argc, char* argv[]) {
     
     string line;
     while (getline(file, line)) {
+        if (!line.empty() && line.back() == '\r') {
+            line.pop_back();
+        }
         istringstream iss(line);
         string code, num;
         if (getline(iss, code, ',') && getline(iss, num)) {
@@ -57,8 +62,8 @@ int main(int argc, char* argv[]) {
     
     file.close();
     
-    
     // =============== Step 2 - Bind the UDP socket ===============
+    
     sockaddr_in udpService;
     udpService.sin_family = AF_INET;
     inet_pton(AF_INET, "127.0.0.1", &udpService.sin_addr);
@@ -72,13 +77,15 @@ int main(int argc, char* argv[]) {
         cout << "Server S is up and running using UDP on port " << udp_port << "." << endl;
     }
     
+    sockaddr_in clientService;
+    socklen_t clientService_length = sizeof(clientService);
+    clientService.sin_family = AF_INET;
+    inet_pton(AF_INET, "127.0.0.1", &clientService.sin_addr);
+    clientService.sin_port = htons(45469);
+    
     // =============== Step 3 - Receive data from Main Server ===============
+    
     while (true) {
-        sockaddr_in clientService;
-        socklen_t clientService_length = sizeof(clientService);
-        clientService.sin_family = AF_INET;
-        inet_pton(AF_INET, "127.0.0.1", &clientService.sin_addr);
-        clientService.sin_port = htons(45469);
         char recvBuffer[200];
         int recvBytes = recvfrom(udpSocket, recvBuffer, sizeof(recvBuffer), 0, (struct sockaddr*)&clientService, &clientService_length);
         
@@ -89,14 +96,21 @@ int main(int argc, char* argv[]) {
         }
         else {
             bookCode = recvBuffer;
-            cout << "Server S received " << bookCode << " code from the Main Server." << endl;
+            if (recvBuffer[recvBytes - 2] == 'A') {
+                admin = true;
+                cout << "Server S received an inventory status request for code " << bookCode << "." << endl;
+            }
+            else {
+                cout << "Server S received " << bookCode << " code from the Main Server." << endl;
+            }
         }
         
         // =============== Step 4 - Send data to Main Server ===============
+        
         char sendBuffer[200];
         if (bookMap.find(bookCode) != bookMap.end()) {
             number = bookMap[bookCode];
-            if (stoi(number) > 0) {
+            if (stoi(number) > 0 && !admin) {
                 strcpy(sendBuffer, "The requested book is available.");
                 
                 // Update the number of books
@@ -115,6 +129,10 @@ int main(int argc, char* argv[]) {
                 
                 outFile.close();
             }
+                // Admin request, just send the number of books if it is not negative
+            else if (stoi(number) >= 0 && admin) {
+                strcpy(sendBuffer, number.c_str());
+            }
             else {
                 strcpy(sendBuffer, "The requested book is not available.");
             }
@@ -127,6 +145,9 @@ int main(int argc, char* argv[]) {
             cout << "sendto() failed with error: " << errno << endl;
             close(udpSocket);
             return 0;
+        }
+        else if (admin) {
+            cout << "Server S finished sending the inventory status to the Main Server using UDP on port " << udp_port << "." << endl;
         }
         else {
             cout << "Server S finished sending the availability status of code " << bookCode << " to the Main Server using UDP on port " << udp_port << "." << endl;

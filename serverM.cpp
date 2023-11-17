@@ -177,6 +177,7 @@ int main(int argc, char* argv[]) {
                     responseType = 3;
                 }
             } else {
+                strcpy(bookCode, TCP_receive_buffer);
                 // ================== Step 8: Send the request to the backend server ==================
                 cout << "Main Server received the book request from the client using TCP over port " << TCP_Port << "." << endl;
                 string target(1, TCP_receive_buffer[0]);

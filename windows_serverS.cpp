@@ -67,6 +67,7 @@ int main(int argc, char* argv[]) {
     file.close();
     
     // =============== Step 3 - Bind the UDP socket ===============
+    
     sockaddr_in udpService;
     udpService.sin_family = AF_INET;
     InetPton(AF_INET, _T("127.0.0.1"), &udpService.sin_addr.s_addr);
@@ -86,7 +87,9 @@ int main(int argc, char* argv[]) {
     clientService.sin_family = AF_INET;
     InetPton(AF_INET, _T("127.0.0.1"), &clientService.sin_addr.s_addr);
     clientService.sin_port = htons(45469);
+    
     // =============== Step 4 - Receive data from Main Server ===============
+    
     while (true) {
         char recvBuffer[200] = {0};
         int recvBytes = recvfrom(udpSocket, recvBuffer, sizeof(recvBuffer), 0, (SOCKADDR*)&clientService, &clientService_length);
