@@ -87,9 +87,6 @@ int main(int argc, char* argv[]) {
             cout << "Please enter the password: ";
             cin >> password;
             
-            if (username == "Admin" && password == "Admin") {
-                isAdmin = true;
-            }
             string encryptedUsername = encrypt(username, encryptionMap);
             string encryptedPassword = encrypt(password, encryptionMap);
             string message = encryptedUsername + " " + encryptedPassword;
@@ -131,6 +128,9 @@ int main(int argc, char* argv[]) {
             cout << "Response received from the Main Server on TCP port: " << localPortNumber << "." << endl;
             if (strcmp(receiveBuffer, "Authorize") == 0) {
                 isAuthorized = true;
+                if (username == "admin") {
+                    isAdmin = true;
+                }
                 cout << username << " received the result of the authentication from the Main Server using TCP over port " << localPortNumber << ". Authentication is successful." << endl;
             }
             else if (strcmp(receiveBuffer, "Unauthorized") == 0) {
