@@ -257,7 +257,7 @@ This project has specific failure conditions under which it might not perform as
    }
    ```
 
-- In `serverH.cpp`: 58, I referred [cplusplus.com]([cplusplus.com/reference/string/string/find_first_not_of/](https://cplusplus.com/reference/string/string/find_first_not_of/)) to delete the possible space in the beginning of the number:
+- In `serverH.cpp`: 58, I referred [cplusplus.com/reference/string/string/find_first_not_of/](https://cplusplus.com/reference/string/string/find_first_not_of/) to delete the possible space in the beginning of the number:
 
   ```C++
   // Delete the possible space in the beginning of the number
