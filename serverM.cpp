@@ -197,7 +197,7 @@ int main(int argc, char* argv[]) {
                     // Admin request to backend server
                     if (isAdmin) {
                         TCP_receive_buffer[TCP_byteReceived - 2] = 'A';
-                        TCP_receive_buffer[TCP_byteReceived + 2] = '\0';
+                        TCP_receive_buffer[TCP_byteReceived - 1] = '\0';
                     }
                     
                     int byteSent = sendto(UDP_Socket, TCP_receive_buffer, 200, 0, (struct sockaddr*)&targetServer, sizeof(targetServer));
