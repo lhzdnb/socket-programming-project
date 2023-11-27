@@ -266,4 +266,23 @@ This project has specific failure conditions under which it might not perform as
   bookMap[code] = num;
   ```
 
+- In `build_encryption_map.h`, I referred [凯撒密码（Caesar）加密解密算法C/C++实现_凯撒密码c++代码-CSDN博客](https://blog.csdn.net/qq_36134761/article/details/80385862) to encrypt the username and password:
+  ```c++
+  // Reference: https://blog.csdn.net/qq_36134761/article/details/80385862
+  std::unordered_map<char, char> buildEncryptionMap() {
+      std::unordered_map<char, char> encMap;
+      for (char c = 'a'; c <= 'z'; ++c) {
+          encMap[c] = (c - 'a' + 5) % 26 + 'a';
+      }
+      for (char c = 'A'; c <= 'Z'; ++c) {
+          encMap[c] = (c - 'A' + 5) % 26 + 'A';
+      }
+      for (char c = '0'; c <= '9'; ++c) {
+          encMap[c] = (c - '0' + 5) % 10 + '0';
+      }
+      
+      return encMap;
+  }
+  ```
+
   
