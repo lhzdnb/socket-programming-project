@@ -6,7 +6,7 @@
 #define CODE_BUILD_ENCRYPTION_MAP_H
 #include <unordered_map>
 #include <string>
-// Reference: https://blog.51cto.com/u_13875041/5877617
+// Reference: https://blog.csdn.net/qq_36134761/article/details/80385862
 std::unordered_map<char, char> buildEncryptionMap() {
     std::unordered_map<char, char> encMap;
     for (char c = 'a'; c <= 'z'; ++c) {
