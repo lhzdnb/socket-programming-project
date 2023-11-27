@@ -1,13 +1,8 @@
-# EE450 Socket Programming Project
-
-## Personal Details
-
-- Full Name: Hao Liang
-- Student ID: 4773-3404-69
+# Socket Programming Project
 
 ## Project Description
 
-In this assignment, I implemented a library registration system based on TCP and UDP. I also implement the optional part (admin).
+In this project, I implemented a library registration system based on TCP and UDP, both on Windows and Linux.
 
 ### Backend Server
 
@@ -51,8 +46,6 @@ There is one client: `client`.
 
 
 <img src="./assets/architecture.png" alt="protocol architecture of the system" style="zoom:50%;" />
-
-> Image Source: EE450 Socket Programming Project.pdf
 
 The Client communicates with server M using TCP. server M communicates with the three backend servers using UDP.
 
